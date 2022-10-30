@@ -56,6 +56,12 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
 }
 #endif
 
++ (instancetype)textViewUsingTextLayoutManager:(BOOL)usingTextLayoutManager {
+  SZTextView *tv = [super textViewUsingTextLayoutManager:usingTextLayoutManager];
+  [tv preparePlaceholder];
+  return tv;
+}
+
 - (void)preparePlaceholder
 {
     NSAssert(!self._placeholderTextView, @"placeholder has been prepared already: %@", self._placeholderTextView);
