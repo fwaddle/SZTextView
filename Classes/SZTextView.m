@@ -69,9 +69,8 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
     // needs to inherit some properties from its parent text view
 
     // account for standard UITextViewPadding
-
-    CGRect frame = self.bounds;
-    self._placeholderTextView = [[UITextView alloc] initWithFrame:frame];
+    self._placeholderTextView = [UITextView new];
+    self._placeholderTextView.translatesAutoresizingMaskIntoConstraints = NO;
     self._placeholderTextView.opaque = NO;
     self._placeholderTextView.backgroundColor = [UIColor clearColor];
     self._placeholderTextView.textColor = [UIColor colorWithWhite:0.7f alpha:0.7f];
@@ -142,29 +141,12 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
 {
     _placeholder = [placeholderText copy];
     _attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholderText];
-
-    [self resizePlaceholderFrame];
 }
 
 - (void)setAttributedPlaceholder:(NSAttributedString *)attributedPlaceholderText
 {
     _placeholder = attributedPlaceholderText.string;
     _attributedPlaceholder = [attributedPlaceholderText copy];
-
-    [self resizePlaceholderFrame];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    [self resizePlaceholderFrame];
-}
-
-- (void)resizePlaceholderFrame
-{
-    CGRect frame = self._placeholderTextView.frame;
-    frame.size = self.bounds.size;
-    self._placeholderTextView.frame = frame;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -189,11 +171,9 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
     }
     else if ([keyPath isEqualToString:kExclusionPathsKey]) {
         self._placeholderTextView.textContainer.exclusionPaths = [change objectForKey:NSKeyValueChangeNewKey];
-        [self resizePlaceholderFrame];
     }
     else if ([keyPath isEqualToString:kLineFragmentPaddingKey]) {
         self._placeholderTextView.textContainer.lineFragmentPadding = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
-        [self resizePlaceholderFrame];
     }
     else if ([keyPath isEqualToString:kTextContainerInsetKey]) {
         NSValue *value = [change objectForKey:NSKeyValueChangeNewKey];
@@ -238,6 +218,10 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
                 self._placeholderTextView.alpha = 0;
                 [self addSubview:self._placeholderTextView];
                 [self sendSubviewToBack:self._placeholderTextView];
+                [self._placeholderTextView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+                [self._placeholderTextView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+                [self._placeholderTextView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+                [self._placeholderTextView.bottomAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor].active = YES;
             }
             [UIView animateWithDuration:_fadeTime animations:^{
                 self._placeholderTextView.alpha = 1;
@@ -247,6 +231,10 @@ static NSString * const kTextAlignmentKey = @"textAlignment";
             [self addSubview:self._placeholderTextView];
             [self sendSubviewToBack:self._placeholderTextView];
             self._placeholderTextView.alpha = 1;
+            [self._placeholderTextView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+            [self._placeholderTextView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+            [self._placeholderTextView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+            [self._placeholderTextView.bottomAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor].active = YES;
         }
     }
     else {
